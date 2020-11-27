@@ -61,45 +61,61 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
         xml.recyclerview.setLayoutManager(new LinearLayoutManager(mActivity));
         xml.recyclerview.setAdapter(adapter);
 
-        //1번 아이템
-        PickerOutModel outModel1 = new PickerOutModel();
-        Paths paths1 = new Paths();
-        outModel1.setTitle("1. Dev");
-        outModel1.setPaths(paths1);
 
-        PickerOutModel outModel2 = new PickerOutModel();
-        Paths paths2 = new Paths();
-        outModel2.setTitle("2. Hyeon");
-        outModel2.setPaths(paths2);
-
-
-        PickerOutModel outModel3 = new PickerOutModel();
-        outModel3.setTitle("3. 33333");
-        Paths paths3 = new Paths();
-        outModel3.setPaths(paths3);
-
-        PickerOutModel outModel4 = new PickerOutModel();
-        outModel4.setTitle("4. 44444");
-        Paths paths4 = new Paths();
-        outModel4.setPaths(paths4);
-
-        PickerOutModel outModel5 = new PickerOutModel();
-        outModel5.setTitle("5. 55555");
-        Paths paths5 = new Paths();
-        outModel5.setPaths(paths5);
-
-        PickerOutModel outModel6 = new PickerOutModel();
-        outModel6.setTitle("6. 66666");
-        Paths paths6 = new Paths();
-        outModel6.setPaths(paths6);
-
-
-        adapter.addItem(outModel1);
-        adapter.addItem(outModel2);
-        adapter.addItem(outModel3);
-        adapter.addItem(outModel4);
-        adapter.addItem(outModel5);
-        adapter.addItem(outModel6);
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("1. 강아지")
+                        .paths(new Paths())
+                        .build()
+        );
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("2. 고양이")
+                        .paths(new Paths())
+                        .build()
+        );
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("3. 토끼")
+                        .paths(new Paths())
+                        .build()
+        );
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("4. 새")
+                        .paths(new Paths())
+                        .build()
+        );
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("5. 하늘")
+                        .paths(new Paths())
+                        .build()
+        );
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("6. 바다")
+                        .paths(new Paths())
+                        .build()
+        );
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("7. 땅")
+                        .paths(new Paths())
+                        .build()
+        );
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("8.우주")
+                        .paths(new Paths())
+                        .build()
+        );
+        adapter.addItem(
+                PickerOutModel.builder()
+                        .title("9.나무")
+                        .paths(new Paths())
+                        .build()
+        );
         adapter.notifyDataSetChanged();
     }
 
