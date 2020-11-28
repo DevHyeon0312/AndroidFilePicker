@@ -7,9 +7,9 @@
 ###### https://github.com/DroidNinja/Android-FilePicker
 
 ---------------------------------------------------------------
-#OPEN Issues : 0 Issue
+### OPEN Issues : 0 Issue
 
-#CLOSE Issues : 1 Issue
+### CLOSE Issues : 1 Issue
 https://github.com/DevHyeon0312/AndroidFilePicker/issues/1
 
 
