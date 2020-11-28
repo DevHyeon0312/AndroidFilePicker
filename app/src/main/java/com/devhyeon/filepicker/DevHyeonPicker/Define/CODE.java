@@ -9,4 +9,6 @@ public class CODE {
     public static final int FILE_SELECT_REQUEST_CODE = 532;
     public static final int CAMERA_VIEW_REQUEST_CODE = 518;
     public static final int MAX_SELECT_COUNT = 10;
+    public static final int TYPE_PHOTO  = 15;
+    public static final int TYPE_DOC    = 25;
 }

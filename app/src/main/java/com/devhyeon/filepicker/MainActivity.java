@@ -170,7 +170,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
         }
     }
     private void startPickPhoto(View view, PickerOutModel model, int position) {
-        int maxCount = CODE.MAX_SELECT_COUNT - model.getPaths().getAllPaths().size();
+        int maxCount = CODE.MAX_SELECT_COUNT - model.getPaths().getPhotoPaths().size();
         if (maxCount <= 0) {
             Toast.makeText(mActivity, "더이상 선택할 수 없습니다.", Toast.LENGTH_SHORT).show();
         } else {
@@ -179,7 +179,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
             Log.i("DevHyeon",model.getPaths().toString());
 
             FilePickerBuilder.getInstance()
-                    .setMaxCount(maxCount)
+                    .setMaxCount(CODE.MAX_SELECT_COUNT)
                     .setSelectedFiles(model.getPaths().getPhotoPaths())
                     .setActivityTheme(R.style.FilePickerTheme)
                     .setActivityTitle("이미지를 선택하세요.")
@@ -207,12 +207,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
         }
     }
     private void startPickDoc(View view, PickerOutModel model, int position) {
-        int maxCount = CODE.MAX_SELECT_COUNT - model.getPaths().getAllPaths().size();
+        int maxCount = CODE.MAX_SELECT_COUNT - model.getPaths().getDocPaths().size();
+        Log.e("DevHyeon",model.getPaths().getAllPaths().size()+"");
         if (maxCount <= 0) {
             Toast.makeText(mActivity, "더이상 선택할 수 없습니다.", Toast.LENGTH_SHORT).show();
         } else {
             FilePickerBuilder.getInstance()
-                    .setMaxCount(maxCount)
+                    .setMaxCount(CODE.MAX_SELECT_COUNT)
                     .setSelectedFiles(model.getPaths().getDocPaths())
                     .setActivityTheme(R.style.FilePickerTheme)
                     .setActivityTitle("파일을 선택하세요.")
@@ -227,13 +228,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
     /**
      * Update List
      * */
-    private void updateList(int pos, @NonNull ArrayList<Uri> list) {
-
+    private void updateList(int type, int pos, @NonNull ArrayList<Uri> list) {
         Log.i("DevHyeon List : ",list.toString());
         Log.i("DevHyeon Pos : ", pos+"");
         if (pos != -1) {
-            adapter.getOutModel(pos).getPaths().getPhotoPaths().clear();
-            adapter.getOutModel(pos).getPaths().setPhotoPaths(list);
+            if (type == CODE.TYPE_PHOTO) {
+                adapter.getOutModel(pos).getPaths().getPhotoPaths().clear();
+                adapter.getOutModel(pos).getPaths().setPhotoPaths(list);
+            } else {
+                adapter.getOutModel(pos).getPaths().getDocPaths().clear();
+                adapter.getOutModel(pos).getPaths().setDocPaths(list);
+            }
 
             adapter.getOutModel(pos).getPaths().getAllPaths().clear();
             adapter.getOutModel(pos).getPaths().getAllPaths().addAll(adapter.getOutModel(pos).getPaths().getPhotoPaths());
@@ -263,7 +268,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
                     int pos = adapter.getLastSelectIndex();
                     ArrayList<Uri> photoList = data.getParcelableArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA);
                     if (photoList != null) {
-                        updateList(pos, photoList);
+                        updateList(CODE.TYPE_PHOTO, pos, photoList);
                     }
                 }
                 break;
@@ -272,7 +277,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
                     int pos = adapter.getLastSelectIndex();
                     ArrayList<Uri> docList = data.getParcelableArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS);
                     if (docList != null) {
-                        updateList(pos, docList);
+                        updateList(CODE.TYPE_DOC, pos, docList);
                     }
                 }
                 break;
