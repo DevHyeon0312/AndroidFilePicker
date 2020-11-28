@@ -58,11 +58,19 @@ public class PickerOutListAdapter extends RecyclerView.Adapter<PickerOutListView
     }
 
     @Override
-    public void onItemClick(FileItem fileItem, int position) {
+    public void onItemClick(FileItem fileItem, int childPosition) {
         if (pickerInListClickListener != null) {
-            pickerInListClickListener.onItemClick(fileItem, position);
+            pickerInListClickListener.onItemClick(fileItem, childPosition);
         }
     }
+
+    @Override
+    public void onDeleteClick(FileItem fileItem, int parentPosition, int childPosition) {
+        if (pickerInListClickListener != null) {
+            pickerInListClickListener.onDeleteClick(fileItem, parentPosition, childPosition);
+        }
+    }
+
 
     @NonNull
     @Override
@@ -85,7 +93,7 @@ public class PickerOutListAdapter extends RecyclerView.Adapter<PickerOutListView
 
         /** InItem */
         holder.itemXml.inRecyclerview.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-        pickerInListAdapterHashMap.put(position, new PickerInListAdapter(mActivity, pickerOutModelArrayList.get(position).getPaths().getFileItems(), pickerInListClickListener));
+        pickerInListAdapterHashMap.put(position, new PickerInListAdapter(position, mActivity, pickerOutModelArrayList.get(position).getPaths().getFileItems(), pickerInListClickListener));
         holder.itemXml.inRecyclerview.setAdapter(pickerInListAdapterHashMap.get(position));
         holder.itemXml.inRecyclerview.setItemAnimator(new DefaultItemAnimator());
 

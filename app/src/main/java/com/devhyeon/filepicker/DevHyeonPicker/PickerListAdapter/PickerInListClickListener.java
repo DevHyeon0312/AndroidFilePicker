@@ -6,5 +6,7 @@ import com.devhyeon.filepicker.DevHyeonPicker.Model.FileItem;
  * Created by DevHyeon on 2020.11.24
  * */
 public interface PickerInListClickListener {
-    void onItemClick(FileItem fileItem, int position);
+    void onItemClick(FileItem fileItem, int childPosition);
+
+    void onDeleteClick(FileItem fileItem, int parentPosition, int childPosition);
 }

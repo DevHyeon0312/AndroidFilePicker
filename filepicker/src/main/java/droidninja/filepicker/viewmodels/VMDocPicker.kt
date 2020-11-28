@@ -9,7 +9,6 @@ import android.text.TextUtils
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import droidninja.filepicker.FilePickerConst
 import droidninja.filepicker.PickerManager
 import droidninja.filepicker.models.Document
 import droidninja.filepicker.models.FileType
@@ -37,8 +36,13 @@ class VMDocPicker(application: Application) : BaseViewModel(application) {
         var data = HashMap<FileType, List<Document>>()
         withContext(Dispatchers.IO) {
 
-            val selection = ("${MediaStore.Files.FileColumns.MEDIA_TYPE}!=${MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE}" +
-                    " AND ${MediaStore.Files.FileColumns.MEDIA_TYPE}!=${MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO}")
+            val selection = (MediaStore.Files.FileColumns.MEDIA_TYPE
+                    + "!="
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+                    + " AND "
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE
+                    + "!="
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)
 
             val DOC_PROJECTION = arrayOf(MediaStore.Files.FileColumns._ID,
                     MediaStore.Files.FileColumns.DATA,

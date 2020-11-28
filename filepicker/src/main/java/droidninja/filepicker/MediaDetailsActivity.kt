@@ -30,8 +30,6 @@ class MediaDetailsActivity : BaseFilePickerActivity(), FileAdapterListener {
     private lateinit var mGlideRequestManager: RequestManager
     private var photoGridAdapter: PhotoGridAdapter? = null
     private var fileType: Int = 0
-    private var imageFileSize: Int = FilePickerConst.DEFAULT_FILE_SIZE
-    private var videoFileSize: Int = FilePickerConst.DEFAULT_FILE_SIZE
     private var selectAllItem: MenuItem? = null
     private var photoDirectory: PhotoDirectory? = null
     lateinit var viewModel: VMMediaPicker
@@ -48,8 +46,6 @@ class MediaDetailsActivity : BaseFilePickerActivity(), FileAdapterListener {
         if (intent != null) {
 
             fileType = intent.getIntExtra(FilePickerConst.EXTRA_FILE_TYPE, FilePickerConst.MEDIA_TYPE_IMAGE)
-            imageFileSize = intent.getIntExtra(FilePickerConst.EXTRA_IMAGE_FILE_SIZE, FilePickerConst.DEFAULT_FILE_SIZE)
-            videoFileSize = intent.getIntExtra(FilePickerConst.EXTRA_VIDEO_FILE_SIZE, FilePickerConst.DEFAULT_FILE_SIZE)
             photoDirectory = intent.getParcelableExtra(PhotoDirectory::class.java.simpleName)
             if (photoDirectory != null) {
                 setUpView()
@@ -77,8 +73,7 @@ class MediaDetailsActivity : BaseFilePickerActivity(), FileAdapterListener {
         recyclerView = findViewById(R.id.recyclerview)
         emptyView = findViewById(R.id.empty_view)
 
-        val spanCount = PickerManager.spanTypes[FilePickerConst.SPAN_TYPE.DETAIL_SPAN] ?: 3
-        val layoutManager = StaggeredGridLayoutManager(spanCount, OrientationHelper.VERTICAL)
+        val layoutManager = StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL)
         layoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
         recyclerView?.layoutManager = layoutManager
         recyclerView?.itemAnimator = DefaultItemAnimator()
@@ -104,7 +99,7 @@ class MediaDetailsActivity : BaseFilePickerActivity(), FileAdapterListener {
         viewModel.lvMediaData.observe(this, Observer { data ->
             updateList(data)
         })
-        viewModel.getMedia(bucketId = photoDirectory?.bucketId, mediaType = fileType, imageFileSize = imageFileSize, videoFileSize = videoFileSize)
+        viewModel.getMedia(bucketId = photoDirectory?.bucketId, mediaType = fileType)
     }
 
     private fun updateList(medias: List<Media>) {
@@ -148,7 +143,6 @@ class MediaDetailsActivity : BaseFilePickerActivity(), FileAdapterListener {
         menuInflater.inflate(R.menu.media_detail_menu, menu)
         selectAllItem = menu.findItem(R.id.action_select)
         selectAllItem?.isVisible = PickerManager.hasSelectAll()
-        menu.findItem(R.id.action_done)?.isVisible = PickerManager.getMaxCount() > 1
 
         return super.onCreateOptionsMenu(menu)
     }

@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.devhyeon.filepicker.DevHyeonPicker.Model.FileItem;
 import com.devhyeon.filepicker.DevHyeonPicker.PickerListViewHolder.PickerInListViewHolder;
 import com.devhyeon.filepicker.R;
@@ -23,22 +25,34 @@ public class PickerInListAdapter extends RecyclerView.Adapter<PickerInListViewHo
     private Activity mActivity;
     private Context mContext;
     private boolean isClickable;
+    private int parentIndex=-1;
     private ArrayList<FileItem> pickerInModelArrayList = new ArrayList<>();
 
     private PickerInListClickListener pickerInListClickListener;
 
-    public PickerInListAdapter(@NonNull Activity activity, ArrayList<FileItem> pickerInModelArrayList, @NonNull PickerInListClickListener pickerInListClickListener) {
+    public PickerInListAdapter(int parentIndex, @NonNull Activity activity, ArrayList<FileItem> pickerInModelArrayList, @NonNull PickerInListClickListener pickerInListClickListener) {
         this.mActivity = activity;
         this.mContext = (Context) activity;
         this.isClickable = false;
+        this.parentIndex = parentIndex;
         this.pickerInModelArrayList = pickerInModelArrayList;
         this.pickerInListClickListener = pickerInListClickListener;
     }
 
+
     @Override
-    public void onItemClick(FileItem item, int position) {
+    public void onItemClick(FileItem fileItem, int childPosition) {
         if (pickerInListClickListener != null) {
-            pickerInListClickListener.onItemClick(item, position);
+            pickerInListClickListener.onItemClick(fileItem, childPosition);
+        }
+    }
+
+    @Override
+    public void onDeleteClick(FileItem fileItem, int parentPosition, int childPosition) {
+        if (pickerInListClickListener != null) {
+            pickerInListClickListener.onDeleteClick(fileItem, parentIndex, childPosition);
+            pickerInModelArrayList.remove(fileItem);
+            notifyDataSetChanged();
         }
     }
 
@@ -63,9 +77,18 @@ public class PickerInListAdapter extends RecyclerView.Adapter<PickerInListViewHo
 
         FileItem item = pickerInModelArrayList.get(position);
         if (item != null) {
+            //Item Click Event
             holder.itemView.setOnClickListener(v -> onItemClick(item, position));
-
-            holder.itemXml.text.setText(item.getFileName());
+            //Item Delete Click Event
+            holder.itemXml.ivDelete.setOnClickListener(v -> onDeleteClick(item, parentIndex, position));
+            //Item Set Image
+            Glide.with(mContext)
+                    .load(item.getFileUri())
+                    .apply(
+                            RequestOptions.centerCropTransform().dontAnimate().placeholder(droidninja.filepicker.R.drawable.icon_file_unknown)
+                    )
+                    .thumbnail(0.5f)
+                    .into(holder.itemXml.ivFile);
         }
     }
 

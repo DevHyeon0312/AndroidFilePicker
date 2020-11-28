@@ -31,6 +31,7 @@ import java.util.List;
 
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
+import droidninja.filepicker.models.sort.SortingTypes;
 import lombok.ToString;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -52,8 +53,20 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
         listClickListener2 = new PickerInListClickListener() {
             @Override
             public void onItemClick(FileItem fileItem, int position) {
-                Toast.makeText(mActivity, "MainActivity InItem Click", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity, "FileItem Detail View", Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onDeleteClick(FileItem fileItem, int parentPosition, int childPosition) {
+                Toast.makeText(mActivity,"FileItem Delete Click " + childPosition,Toast.LENGTH_SHORT).show();
+
+                adapter.getOutModel(parentPosition).getPaths().getAllPaths().remove((Object)fileItem.getFileUri());
+                adapter.getOutModel(parentPosition).getPaths().getPhotoPaths().remove((Object)fileItem.getFileUri());
+                adapter.getOutModel(parentPosition).getPaths().getDocPaths().remove((Object)fileItem.getFileUri());
+                adapter.getOutModel(parentPosition).getPaths().getFileItems().remove((Object)fileItem);
+                adapter.notifyDataSetChanged();
+            }
+
         };
 
         adapter = new PickerOutListAdapter(this, listClickListener, listClickListener2);
@@ -169,7 +182,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
                     .setMaxCount(maxCount)
                     .setSelectedFiles(model.getPaths().getPhotoPaths())
                     .setActivityTheme(R.style.FilePickerTheme)
-                    .setActivityTitle("선택하세요")
+                    .setActivityTitle("이미지를 선택하세요.")
                     .enableVideoPicker(false)
                     .enableCameraSupport(true)
                     .showGifs(true)
@@ -198,7 +211,43 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
         if (maxCount <= 0) {
             Toast.makeText(mActivity, "더이상 선택할 수 없습니다.", Toast.LENGTH_SHORT).show();
         } else {
-            //TODO : Select Photo
+            FilePickerBuilder.getInstance()
+                    .setMaxCount(maxCount)
+                    .setSelectedFiles(model.getPaths().getDocPaths())
+                    .setActivityTheme(R.style.FilePickerTheme)
+                    .setActivityTitle("파일을 선택하세요.")
+                    .enableDocSupport(true)
+                    .enableSelectAll(true)
+                    .sortDocumentsBy(SortingTypes.name)
+                    .withOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                    .pickFile(this);
+        }
+    }
+
+    /**
+     * Update List
+     * */
+    private void updateList(int pos, @NonNull ArrayList<Uri> list) {
+
+        Log.i("DevHyeon List : ",list.toString());
+        Log.i("DevHyeon Pos : ", pos+"");
+        if (pos != -1) {
+            adapter.getOutModel(pos).getPaths().getPhotoPaths().clear();
+            adapter.getOutModel(pos).getPaths().setPhotoPaths(list);
+
+            adapter.getOutModel(pos).getPaths().getAllPaths().clear();
+            adapter.getOutModel(pos).getPaths().getAllPaths().addAll(adapter.getOutModel(pos).getPaths().getPhotoPaths());
+            adapter.getOutModel(pos).getPaths().getAllPaths().addAll(adapter.getOutModel(pos).getPaths().getDocPaths());
+
+            ArrayList<FileItem> newFile = new ArrayList<>();
+            for (Uri uri : adapter.getOutModel(pos).getPaths().getAllPaths()) {
+                newFile.add(new FileItem("item","",uri));
+            }
+            adapter.getPickerInListAdapterHashMap().get(pos).addItems(newFile);
+            adapter.getPickerInListAdapterHashMap().get(pos).notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
+
+            Log.i("DevHyeon",adapter.getOutModel(pos).getPaths().toString());
         }
     }
 
@@ -213,35 +262,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements E
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     int pos = adapter.getLastSelectIndex();
                     ArrayList<Uri> photoList = data.getParcelableArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA);
-
-                    Log.i("DevHyeon List : ",photoList.toString());
-                    Log.i("DevHyeon Pos : ", pos+"");
-
-                    if (photoList != null && pos != -1) {
-                        adapter.getOutModel(pos).getPaths().getPhotoPaths().clear();
-                        adapter.getOutModel(pos).getPaths().setPhotoPaths(photoList);
-
-                        adapter.getOutModel(pos).getPaths().getAllPaths().clear();
-                        adapter.getOutModel(pos).getPaths().getAllPaths().addAll(adapter.getOutModel(pos).getPaths().getPhotoPaths());
-                        adapter.getOutModel(pos).getPaths().getAllPaths().addAll(adapter.getOutModel(pos).getPaths().getDocPaths());
-
-                        ArrayList<FileItem> newFile = new ArrayList<>();
-                        for (Uri uri : adapter.getOutModel(pos).getPaths().getAllPaths()) {
-                            newFile.add(new FileItem("item","",uri));
-                        }
-                        adapter.getPickerInListAdapterHashMap().get(pos).addItems(newFile);
-                        adapter.getPickerInListAdapterHashMap().get(pos).notifyDataSetChanged();
-                        adapter.notifyDataSetChanged();
-
-                        Log.i("DevHyeon",adapter.getOutModel(pos).getPaths().toString());
+                    if (photoList != null) {
+                        updateList(pos, photoList);
                     }
                 }
                 break;
             case FilePickerConst.REQUEST_CODE_DOC:
-                if (requestCode == Activity.RESULT_OK && data != null) {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    int pos = adapter.getLastSelectIndex();
                     ArrayList<Uri> docList = data.getParcelableArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS);
                     if (docList != null) {
-
+                        updateList(pos, docList);
                     }
                 }
                 break;
